@@ -106,6 +106,12 @@ header{background:linear-gradient(135deg,#500724,#9d174d,#be185d);padding:18px 2
 .quiz-nav button{padding:8px 18px;border-radius:8px;border:none;cursor:pointer;font-size:.82rem;font-weight:600}
 .btn-prox-q{background:var(--ace-primary);color:#fff}
 .btn-prox-q:hover{background:var(--ace-secondary)}
+.quiz-video{margin-top:14px}
+.qvid-btn{background:#1b766c;color:#fff;border:none;border-radius:8px;padding:9px 16px;cursor:pointer;font-size:.82rem;font-weight:600;margin-right:8px}
+.qvid-btn:hover{background:#155e59}
+.qvid-yt{font-size:.78rem;color:var(--muted);text-decoration:none}
+.qvid-yt:hover{color:var(--ace-primary)}
+.qvid-iframe{width:100%;height:280px;border:none;display:block;border-radius:12px;margin-top:10px}
 .quiz-placar{text-align:center;padding:24px;display:none}
 .quiz-placar.show{display:block}
 .placar-num{font-size:3rem;font-weight:800;color:var(--ace-primary)}
@@ -255,6 +261,7 @@ header{background:linear-gradient(135deg,#500724,#9d174d,#be185d);padding:18px 2
       <div class="quiz-pergunta" id="q-pergunta"></div>
       <div class="quiz-ops" id="q-ops"></div>
       <div class="quiz-explicacao" id="q-exp"></div>
+      <div class="quiz-video" id="q-video-wrap" style="display:none"></div>
       <div class="quiz-nav">
         <button class="btn-prox-q" id="btn-prox-q" onclick="proximaQuestao()" style="display:none">Próxima →</button>
       </div>
@@ -543,6 +550,31 @@ const EXAMES_DATA = [
 ];
 
 const STORAGE_KEY = 'orientadorRespostas';
+
+const videoMap = {
+  // Português – Prof Noslen
+  'Colocação Pronominal':        'l_WxqVvmyGo',
+  'Concordância Verbal':         '4ZJnTqTk4_Y',
+  'Regência Verbal':             'B0EgJVneeGE',
+  'Figuras de Linguagem':        'Hi-2LNNg4SE',
+  'Uso da Crase':                'yUpRa62vcSI',
+  'Funções da Linguagem':        'iwyZbcC9pU0',
+  // Informática – Curso em Vídeo / grandes canais
+  'MS-Word':                     '59lDXVkqlqQ',
+  'MS-Excel':                    'Hi6OZYYh52w',
+  'MS-Windows':                  'N8tizX5Wvl4',
+  'MS-PowerPoint':               's7CckgnzojY',
+  'Internet e E-mail':           'pY7pM6JOxMU',
+  // Conhecimentos Específicos
+  'Papel do Orientador':         'f1sfPO0pZc4',
+  'Bullying e Cyberbullying':    'c4hviPCe2Vo',
+  'Projeto Político-Pedagógico': 'Aip1hspKOKY',
+  'Desenvolvimento Estudantil':  'MFBjAjsg5FU',
+  'Mediação de Conflitos':       'sSopbaVYjUg',
+  'Habilidades Socioemocionais': 'AWFE6sb748s',
+};
+
+
 let flashDados=[], flashDeck=[], flashIdx=0;
 let quizPerguntas=[], quizIdx=0, quizCertas=0, quizErradas=0, respondeu=false;
 let exAtual=null, exSecAtual=0, exQAtual=0, exRespostas={}, exStarted=false;
@@ -710,6 +742,16 @@ function renderQuestao(){
   document.getElementById('q-pergunta').textContent = q.p;
   document.getElementById('q-exp').classList.remove('show');
   document.getElementById('btn-prox-q').style.display='none';
+  // vídeo relacionado
+  const vid = q.tema ? (videoMap[q.tema]||'') : '';
+  const wrap = document.getElementById('q-video-wrap');
+  if(vid){
+    wrap.style.display = 'block';
+    wrap.innerHTML = `<iframe width="100%" height="315" src="https://www.youtube.com/embed/${vid}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="border-radius:12px;display:block;margin-top:10px"></iframe>`;
+  } else {
+    wrap.style.display = 'none';
+    wrap.innerHTML = '';
+  }
   const ops = document.getElementById('q-ops');
   ops.innerHTML = q.ops.map((o,i)=>`
     <button class="quiz-op" onclick="verificarResposta(${i})">
